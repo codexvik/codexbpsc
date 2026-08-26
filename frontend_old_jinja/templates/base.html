@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Bihar Exam Alerts{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo" data-i18n="site_name">Bihar Exam Alerts</a>
+      <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Toggle language">EN / हि</button>
+    </div>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <p data-i18n="footer_note">Every claim on this site links to an independent, verifiable source.</p>
+  </footer>
+
+  <div id="callback-bar" class="callback-bar">
+    <button id="callback-toggle" type="button" class="callback-toggle">
+      📞 <span data-i18n="request_callback">Request a Callback</span>
+    </button>
+    <form id="callback-form" class="callback-form" hidden data-exam-id="{{ exam.id if exam else '' }}">
+      <input type="tel" name="phone_number" required placeholder="+91XXXXXXXXXX" minlength="8" maxlength="20">
+      <button type="submit" data-i18n="submit_btn">Submit</button>
+    </form>
+    <p id="callback-result" class="callback-result" hidden></p>
+  </div>
+
+  <script src="/static/i18n.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

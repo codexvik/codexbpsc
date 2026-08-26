@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}{{ exam.name }}{% endblock %}
+{% block content %}
+
+{% set status = exam.status | status_display %}
+
+<a class="back-link" href="/" data-i18n="back_to_exams">&larr; Back to exams</a>
+
+<section class="exam-header">
+  <div class="exam-header-top">
+    <h1>{{ exam.name }}</h1>
+    <span class="status-badge status-{{ status.color }}">
+      <span class="lang-en">{{ status.label_en }}</span>
+      <span class="lang-hi">{{ status.label_hi }}</span>
+    </span>
+  </div>
+  <div class="exam-card-meta">
+    {% if exam.advt_no %}<span><span data-i18n="advt_no">Advt. No.</span>: {{ exam.advt_no }}</span>{% endif %}
+    {% if exam.vacancy_count %}<span><span data-i18n="vacancies">Vacancies</span>: {{ exam.vacancy_count }}</span>{% endif %}
+  </div>
+  <span class="trust-score-badge" title="Not live yet">
+    <span data-i18n="trust_score_label">Trust Score</span>: <span data-i18n="coming_soon">Coming soon</span>
+  </span>
+</section>
+
+{% if exam.notices %}
+<section class="card">
+  <h2 data-i18n="top_notices_title">Recent Notices</h2>
+  <ul class="top-notices-list">
+    {% for notice in exam.notices[:3] %}
+      <li>
+        <span class="top-notice-date">{{ notice.detected_at[:10] }}</span>
+        <span class="top-notice-summary">{{ notice.summary_plain_language }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2 data-i18n="stats_title">Exam Stats</h2>
+  <ul class="key-dates-list">
+    <li><span class="key-date-label" data-i18n="stats_attendance">Candidates last year</span>: <span data-i18n="stats_unavailable">Not yet available</span></li>
+    <li><span class="key-date-label" data-i18n="stats_vacancies_filled">Vacancies filled</span>: <span data-i18n="stats_unavailable">Not yet available</span></li>
+  </ul>
+</section>
+
+{% if exam.key_dates_json %}
+<section class="card">
+  <h2 data-i18n="key_dates">Key Dates</h2>
+  <ul class="key-dates-list">
+    {% for label, value in exam.key_dates_json.items() %}
+      <li><span class="key-date-label">{{ label | capitalize }}</span>: {{ value }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2 data-i18n="eligibility_title">Check Your Eligibility</h2>
+  <form id="eligibility-form" data-exam-id="{{ exam.id }}">
+    <label>
+      <span data-i18n="degree_label">Highest Qualification</span>
+      <input type="text" name="degree" list="degree-options" required placeholder="e.g. B.A., B.Sc.">
+      <datalist id="degree-options">
+        <option value="10th Pass">
+        <option value="12th Pass">
+        <option value="B.A.">
+        <option value="B.Sc.">
+        <option value="B.Com.">
+        <option value="B.Tech.">
+        <option value="Graduate">
+        <option value="Post Graduate">
+      </datalist>
+    </label>
+    <label>
+      <span data-i18n="age_label">Age</span>
+      <input type="number" name="age" min="0" max="100" required>
+    </label>
+    <label>
+      <span data-i18n="category_label">Category</span>
+      <select name="category" required>
+        <option value="General">General</option>
+        <option value="OBC">OBC</option>
+        <option value="EWS">EWS</option>
+        <option value="SC">SC</option>
+        <option value="ST">ST</option>
+      </select>
+    </label>
+    <p class="field-note" data-i18n="category_cert_note">
+      Certificate requirements for your category will be shown here once available.
+    </p>
+    <button type="submit" data-i18n="check_eligibility">Check Eligibility</button>
+  </form>
+  <div id="eligibility-result" class="eligibility-result" hidden></div>
+</section>
+
+<section class="card">
+  <h2 data-i18n="subscribe_title">Get WhatsApp Alerts</h2>
+  <form id="subscribe-form" data-exam-id="{{ exam.id }}">
+    <label>
+      <span data-i18n="phone_label">Phone Number</span>
+      <input type="tel" name="phone_number" required placeholder="+91XXXXXXXXXX" minlength="8" maxlength="20">
+    </label>
+    <div class="button-row">
+      <button type="submit" data-action="subscribe" data-i18n="subscribe_btn">Subscribe</button>
+      <button type="submit" data-action="unsubscribe" class="secondary" data-i18n="unsubscribe_btn">Unsubscribe</button>
+    </div>
+  </form>
+  <div id="subscribe-result" class="subscribe-result" hidden></div>
+</section>
+
+<section class="card">
+  <h2 data-i18n="notices_title">Notice Feed</h2>
+  {% if not exam.notices %}
+    <p class="empty-state" data-i18n="no_notices">No notices yet.</p>
+  {% else %}
+    <ul class="notice-feed">
+      {% for notice in exam.notices %}
+      <li class="notice-item">
+        <p class="notice-summary">{{ notice.summary_plain_language }}</p>
+        {% if notice.old_value or notice.new_value %}
+        <p class="notice-diff">
+          <span class="diff-old">{{ notice.old_value or "—" }}</span>
+          &rarr;
+          <span class="diff-new">{{ notice.new_value or "—" }}</span>
+        </p>
+        {% endif %}
+        <p class="notice-meta">
+          <span data-i18n="detected_on">Detected</span>: {{ notice.detected_at[:16].replace("T", " ") }}
+          {% if notice.effective_date %}
+            &middot; <span data-i18n="effective_date">Effective</span>: {{ notice.effective_date }}
+          {% endif %}
+        </p>
+        <p class="notice-links">
+          {% if notice.archive_url %}
+            <a href="{{ notice.archive_url }}" target="_blank" rel="noopener" data-i18n="verified_archive">✓ Verified archive</a>
+          {% else %}
+            <span class="not-archived" data-i18n="not_yet_archived">Not yet independently archived</span>
+          {% endif %}
+        </p>
+        <details class="official-text">
+          <summary data-i18n="see_official">See official notice</summary>
+          <a href="{{ notice.source_url }}" target="_blank" rel="noopener">{{ notice.source_url }}</a>
+        </details>
+      </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2 data-i18n="result_search_title">Search Your Result</h2>
+  <form id="result-form" data-exam-id="{{ exam.id }}">
+    <label>
+      <span data-i18n="roll_number_label">Roll Number</span>
+      <input type="text" name="roll_number" required>
+    </label>
+    <button type="submit" data-i18n="search_btn">Search</button>
+  </form>
+  <div id="result-search-result" class="result-search-result" hidden></div>
+</section>
+
+<section class="partner-space">
+  <span data-i18n="partner_space_label">Partner Space</span> &middot;
+  <span data-i18n="partner_space_placeholder">Reserved -- not active yet</span>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>window.API_BASE_URL = "{{ API_BASE_URL }}";</script>
+<script src="/static/app.js"></script>
+{% endblock %}

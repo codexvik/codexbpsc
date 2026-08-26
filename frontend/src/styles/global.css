@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+@import "./tokens.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-default);
+  background: var(--color-bg-warm-neutral);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-navy-primary);
+}
+a:hover {
+  color: var(--color-navy-dark);
+}
+
+button {
+  font-family: inherit;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-navy-primary);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+.skel {
+  background: linear-gradient(90deg, var(--color-skeleton-1) 0%, var(--color-skeleton-2) 20%, var(--color-skeleton-1) 40%);
+  background-size: 800px 100%;
+  animation: shimmer 1.3s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+  }
+  * {
+    transition: none !important;
+  }
+}

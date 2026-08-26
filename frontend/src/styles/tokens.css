@@ -1,0 +1,117 @@
+:root {
+  /* Colors */
+  --color-navy-primary: #123262;
+  --color-navy-dark: #152238;
+  --color-navy-hero-start: #0e2a52;
+  --color-navy-hero-mid: #123262;
+  --color-navy-hero-end: #1d4a8c;
+  --color-orange-accent: #FF9933;
+  --color-orange-text: #C2660A;
+  --color-bg-warm-neutral: #F7F5F0;
+  --color-border-neutral: #EAE6DC;
+  --color-divider-light: #F0EDE5;
+  --color-text-muted: #8a8578;
+  --color-text-secondary: #5b5748;
+  --color-text-default: #3a3730;
+  --color-white: #ffffff;
+
+  --color-skeleton-1: #eceae4;
+  --color-skeleton-2: #f6f4ef;
+
+  /* Status colors (bg / text) */
+  --status-open-bg: #E7F5EA;
+  --status-open-text: #1F7A4D;
+  --status-closing-soon-bg: #FFF1E0;
+  --status-closing-soon-text: #C2660A;
+  --status-closed-bg: #F1F0EC;
+  --status-closed-text: #6B7280;
+  --status-result-bg: #E8EEFC;
+  --status-result-text: #1D4ED8;
+  --status-admit-card-bg: #F3E8FF;
+  --status-admit-card-text: #7C3AED;
+  /* Not in the original design's status set -- our real data uses this
+     status (interview_scheduled) and the design only covered
+     open/closing_soon/closed/result/admit_card. Distinct teal so it
+     doesn't collide with any existing status color. */
+  --status-interview-bg: #E0F2F1;
+  --status-interview-text: #0F766E;
+
+  /* Category accent gradients */
+  --accent-state-psc-1: #123262;
+  --accent-state-psc-2: #1d4a8c;
+  --accent-ssc-1: #5B3A8E;
+  --accent-ssc-2: #7A56B5;
+  --accent-railway-1: #B85C0A;
+  --accent-railway-2: #D97B2E;
+  --accent-police-1: #8C2A2A;
+  --accent-police-2: #B23D3D;
+  --accent-teaching-1: #1F7A4D;
+  --accent-teaching-2: #2E9E66;
+
+  /* Typography */
+  --font-display: 'Manrope', system-ui, sans-serif;
+  --font-body: 'Source Sans 3', system-ui, sans-serif;
+
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-xs-plus: 11.5px;
+  --fs-sm: 12px;
+  --fs-sm-plus: 12.5px;
+  --fs-base: 13px;
+  --fs-base-plus: 13.5px;
+  --fs-md: 14px;
+  --fs-md-plus: 14.5px;
+  --fs-lg: 15px;
+  --fs-lg-plus: 16px;
+  --fs-xl: 17px;
+  --fs-2xl: 19px;
+  --fs-3xl: 20px;
+  --fs-4xl: 24px;
+  --fs-5xl: 25px;
+  --fs-hero-mobile: 25px;
+  --fs-hero-desktop: 36px;
+
+  /* Radius */
+  --radius-card: 16px;
+  --radius-card-lg: 18px;
+  --radius-card-sm: 14px;
+  --radius-pill: 20px;
+  --radius-btn: 9px;
+  --radius-btn-lg: 10px;
+  --radius-input: 10px;
+  --radius-chip-sm: 7px;
+
+  /* Spacing / gap */
+  --gap-card-grid: 18px;
+  --gap-fee-grid: 12px;
+  --gap-detail-body: 22px;
+
+  /* Max-widths */
+  --maxw-home: 1180px;
+  --maxw-detail: 1100px;
+  --maxw-saved: 900px;
+
+  /* Shadows */
+  --shadow-card-resting: 0 1px 3px rgba(20,30,50,.04);
+  --shadow-card-hover: 0 16px 32px rgba(20,30,50,.14);
+  --shadow-filter-bar: 0 2px 8px rgba(0,0,0,.03);
+
+  /* Breakpoint (reference value, use as a JS/media-query constant) */
+  --breakpoint-mobile-max: 759px;
+}
+
+/* Reference gradients (recreate with your CSS-in-JS/tooling; custom properties
+   can't hold multi-stop gradients directly in a var()-able form pre-CSS4) */
+/*
+  --gradient-hero:        linear-gradient(160deg, var(--color-navy-hero-start) 0%, var(--color-navy-hero-mid) 55%, var(--color-navy-hero-end) 100%);
+  --gradient-state-psc:   linear-gradient(135deg, var(--accent-state-psc-1), var(--accent-state-psc-2));
+  --gradient-ssc:         linear-gradient(135deg, var(--accent-ssc-1), var(--accent-ssc-2));
+  --gradient-railway:     linear-gradient(135deg, var(--accent-railway-1), var(--accent-railway-2));
+  --gradient-police:      linear-gradient(135deg, var(--accent-police-1), var(--accent-police-2));
+  --gradient-teaching:    linear-gradient(135deg, var(--accent-teaching-1), var(--accent-teaching-2));
+  --gradient-skeleton:    linear-gradient(90deg, var(--color-skeleton-1) 0%, var(--color-skeleton-2) 20%, var(--color-skeleton-1) 40%);
+*/

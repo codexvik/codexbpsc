@@ -1,0 +1,316 @@
+/* Design doc section 2: calm institutional blues/greens, not the
+   red/yellow/orange common to ad-driven aggregators. No web-font download
+   -- system font stack already covers Devanagari well on real devices
+   (Noto Sans Devanagari on Android/Chrome OS, Mangal on Windows), which
+   keeps this fast on low-bandwidth connections (section 1.3). */
+
+:root {
+  --color-bg: #f7f9fb;
+  --color-surface: #ffffff;
+  --color-text: #1c2b36;
+  --color-text-muted: #5b6b76;
+  --color-primary: #0b5c8a;
+  --color-primary-dark: #073f5e;
+  --color-border: #dde5ea;
+
+  --status-green-bg: #e3f5e9;
+  --status-green-text: #1c7a3f;
+  --status-amber-bg: #fdf1dc;
+  --status-amber-text: #96660b;
+  --status-gray-bg: #eaedf0;
+  --status-gray-text: #4a5761;
+  --status-blue-bg: #e1eefb;
+  --status-blue-text: #0b5c8a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+.site-header {
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+.header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.lang-toggle {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+.site-footer {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  padding: 24px 16px 40px;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.exam-card, .card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.exam-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.exam-card[hidden] { display: none; }
+.exam-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.exam-name {
+  font-size: 1.05rem;
+  margin: 0;
+}
+.exam-header h1 {
+  font-size: 1.3rem;
+  margin: 0 0 8px;
+}
+.exam-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-green { background: var(--status-green-bg); color: var(--status-green-text); }
+.status-amber { background: var(--status-amber-bg); color: var(--status-amber-text); }
+.status-gray  { background: var(--status-gray-bg);  color: var(--status-gray-text); }
+.status-blue  { background: var(--status-blue-bg);  color: var(--status-blue-text); }
+
+.exam-card-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 8px 0;
+}
+
+.exam-card-snippet {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  color: var(--color-text);
+}
+
+.card { margin-bottom: 16px; }
+.card h2 { font-size: 1.05rem; margin: 0 0 12px; }
+
+.key-dates-list { list-style: none; margin: 0; padding: 0; }
+.key-dates-list li { padding: 6px 0; border-bottom: 1px solid var(--color-border); }
+.key-dates-list li:last-child { border-bottom: none; }
+.key-date-label { color: var(--color-text-muted); }
+
+form label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+}
+form label span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--color-text-muted);
+}
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  min-height: 44px;
+}
+button {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+button.secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+.button-row { display: flex; gap: 10px; }
+.field-note { color: var(--color-text-muted); font-size: 0.85rem; margin: -4px 0 12px; }
+
+.eligibility-result, .subscribe-result, .result-search-result {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.verdict-eligible { background: var(--status-green-bg); color: var(--status-green-text); }
+.verdict-not-eligible { background: var(--status-amber-bg); color: var(--status-amber-text); }
+.verdict-unknown { background: var(--status-gray-bg); color: var(--status-gray-text); }
+
+.notice-feed { list-style: none; margin: 0; padding: 0; }
+.notice-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.notice-item:last-child { border-bottom: none; }
+.notice-summary { margin: 0 0 6px; font-weight: 600; }
+.notice-diff { margin: 0 0 6px; font-size: 0.92rem; }
+.diff-old { color: var(--color-text-muted); text-decoration: line-through; }
+.diff-new { color: var(--status-green-text); font-weight: 600; }
+.notice-meta { margin: 0 0 6px; font-size: 0.85rem; color: var(--color-text-muted); }
+.notice-links a { color: var(--color-primary); font-size: 0.9rem; }
+.not-archived { color: var(--color-text-muted); font-size: 0.85rem; }
+.official-text summary { cursor: pointer; color: var(--color-primary); font-size: 0.9rem; margin-top: 4px; }
+.official-text a { word-break: break-all; font-size: 0.85rem; }
+
+.empty-state, .notice-banner { color: var(--color-text-muted); text-align: center; padding: 30px 0; }
+
+/* Search bar (home page) */
+.search-bar { margin-bottom: 16px; }
+.search-bar input {
+  background: var(--color-surface);
+  font-size: 1rem;
+}
+
+.notice-count-badge {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Recent-notices highlight (exam detail, top of page) */
+.top-notices-list { list-style: none; margin: 0; padding: 0; }
+.top-notices-list li {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.92rem;
+}
+.top-notices-list li:last-child { border-bottom: none; }
+.top-notice-date { color: var(--color-text-muted); white-space: nowrap; font-size: 0.85rem; }
+
+/* Trust Score -- deliberately styled as inert/muted, not a live metric:
+   see conversation -- this is a Phase 1 idea (the Integrity Scorecard),
+   shown here as a layout placeholder only, not a real score. */
+.trust-score-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* Partner Space -- same "not live" treatment as Trust Score, and
+   deliberately NOT styled like a real ad unit (no imagery, no border
+   emphasis) so it can't be mistaken for a paid placement per the design
+   doc's "nothing that looks like a paid placement" principle. */
+.partner-space {
+  margin: 24px 0 0;
+  padding: 14px;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+/* Request-a-callback bar: fixed at the bottom, present on every page */
+.callback-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+.callback-toggle {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--color-primary-dark);
+}
+.callback-form {
+  display: flex;
+  gap: 8px;
+  max-width: 720px;
+  margin: 10px auto 0;
+}
+.callback-form[hidden] { display: none; } /* [hidden] alone loses to the class rule above without this */
+.callback-form input { flex: 1; }
+.callback-result {
+  max-width: 720px;
+  margin: 8px auto 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+}
+body { padding-bottom: 70px; } /* keep content clear of the fixed callback bar */
+
+/* Bilingual toggle: both language spans exist in the DOM; JS shows one. */
+.lang-hi { display: none; }
+html[data-lang="hi"] .lang-en { display: none; }
+html[data-lang="hi"] .lang-hi { display: inline; }

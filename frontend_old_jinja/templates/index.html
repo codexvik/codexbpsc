@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Bihar Exam Alerts{% endblock %}
+{% block content %}
+
+<div class="search-bar">
+  <input type="search" id="exam-search" data-i18n-placeholder="search_placeholder" placeholder="Search exams...">
+</div>
+
+{% if api_error %}
+  <p class="notice-banner" data-i18n="api_error">Couldn't load exams right now. Please try again shortly.</p>
+{% elif not exams %}
+  <p class="empty-state" data-i18n="no_exams">No exams available yet.</p>
+{% else %}
+  <div class="exam-list" id="exam-list">
+    {% for exam in exams %}
+    {% set status = exam.status | status_display %}
+    <a class="exam-card" href="/exams/{{ exam.id }}" data-search-text="{{ exam.name }} {{ exam.advt_no or '' }}">
+      <div class="exam-card-top">
+        <h2 class="exam-name">{{ exam.name }}</h2>
+        <span class="status-badge status-{{ status.color }}">
+          <span class="lang-en">{{ status.label_en }}</span>
+          <span class="lang-hi">{{ status.label_hi }}</span>
+        </span>
+      </div>
+      <div class="exam-card-meta">
+        {% if exam.advt_no %}
+          <span><span data-i18n="advt_no">Advt. No.</span>: {{ exam.advt_no }}</span>
+        {% endif %}
+        {% if exam.vacancy_count %}
+          <span><span data-i18n="vacancies">Vacancies</span>: {{ exam.vacancy_count }}</span>
+        {% endif %}
+        <span class="notice-count-badge" title="Notices tracked for this exam">
+          🔔 {{ exam.notice_count }}
+        </span>
+      </div>
+      {% if exam.latest_change_snippet %}
+        <p class="exam-card-snippet">
+          <span data-i18n="latest_change">Latest</span>: {{ exam.latest_change_snippet }}
+        </p>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  <p id="no-search-results" class="empty-state" data-i18n="no_search_results" hidden>No exams match your search.</p>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>window.API_BASE_URL = "{{ API_BASE_URL }}";</script>
+<script src="/static/app.js"></script>
+{% endblock %}
