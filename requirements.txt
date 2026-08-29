@@ -2,6 +2,7 @@ requests>=2.32
 beautifulsoup4>=4.15
 lxml>=5.0
 anthropic>=0.125
+openai>=1.0
 pydantic>=2.0
 pypdf>=6.0
 psycopg[binary]>=3.2

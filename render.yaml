@@ -1,0 +1,29 @@
+# Render Blueprint for the public-facing API only (api/main.py). Deploy via
+# Render's "New +" -> "Blueprint", pointing at this repo -- it reads this
+# file and creates the service below.
+#
+# Deliberately does NOT set ADMIN_ENABLED or ANTHROPIC_API_KEY /
+# TELEGRAM_BOT_TOKEN here: the admin console (api/admin.py) has no auth yet
+# (see its docstring and api/main.py's ADMIN_ENABLED gate) and must stay
+# off on any public host. The admin console keeps running locally, pointed
+# at the same DATABASE_URL as this service via .env.local (2026-08-29).
+services:
+  - type: web
+    name: codexbpsc-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # Paste the Neon (or other) Postgres connection string in Render's
+      # dashboard after creating the service -- not stored in this file.
+      - key: DATABASE_URL
+        sync: false
+      # Set to the deployed Vercel URL (e.g. https://codexbpsc.vercel.app)
+      # once the frontend is deployed -- comma-separated if there's more
+      # than one (e.g. a preview URL too).
+      - key: FRONTEND_ORIGIN
+        sync: false

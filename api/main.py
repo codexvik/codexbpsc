@@ -60,8 +60,22 @@ app.add_middleware(
 )
 
 # Internal review admin (api/admin.py) -- server-rendered, no JS, so CORS
-# above doesn't apply to it; a human navigates to it directly.
-app.include_router(admin_router)
+# above doesn't apply to it; a human navigates to it directly. admin.py's
+# own docstring is explicit that it has no auth and "must not be exposed
+# on a public-facing deployment until some access control is added" -- so
+# mounting it is opt-in (2026-08-29, first public deploy) via ADMIN_ENABLED,
+# defaulting OFF. Set ADMIN_ENABLED=true in .env.local for local dev; never
+# set it on a public host (Render etc.) until the admin gets real auth.
+if os.environ.get("ADMIN_ENABLED", "").lower() in ("1", "true", "yes"):
+    app.include_router(admin_router)
+
+
+@app.get("/health")
+def health():
+    """Render (and anything else) hits this to confirm the service is up --
+    deliberately no DB round-trip, so a DB hiccup doesn't flap the deploy's
+    health check and cause a restart loop on top of the DB problem."""
+    return {"status": "ok"}
 
 
 def _get_source_id_pk(conn, source_id: str) -> int:

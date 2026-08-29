@@ -27,7 +27,6 @@ import logging
 import sys
 
 from extraction.extractor import (
-    DEFAULT_MODEL,
     HUMAN_REVIEW_GATE_ENABLED,
     extract_notice,
     extract_notice_from_pdf,
@@ -38,6 +37,7 @@ from ingestion.page_fetcher import fetch_page
 from ingestion.poller import detect_changes
 from ingestion.rate_limiter import RateLimiter
 from ingestion.source_config import get_source_config
+from llm.config import get_active_config
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -103,10 +103,12 @@ def main():
     config = get_source_config(args.source_id)
     rate_limiter = RateLimiter(config["rate_limit_seconds"])
 
+    llm_cfg = get_active_config()
     logger.info(
-        "Human review gate: %s (model=%s)",
+        "Human review gate: %s (provider=%s, model=%s)",
         "ON" if HUMAN_REVIEW_GATE_ENABLED else "OFF",
-        DEFAULT_MODEL,
+        llm_cfg.provider,
+        llm_cfg.model,
     )
 
     if args.url:

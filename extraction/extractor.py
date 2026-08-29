@@ -2,26 +2,22 @@
 LLM-based structuring of raw notice text into the shared schema (tech
 architecture doc, section 5), plus the human-review gate.
 
-Requires ANTHROPIC_API_KEY (or another credential source the Anthropic SDK
-resolves automatically) in the environment.
+Calls go through llm.provider (2026-08-27, "allow me to use any model...
+to save on the cost") rather than instantiating anthropic.Anthropic()
+directly -- which provider/model/key actually runs is decided by the
+admin Settings page, not by this module. Default remains Anthropic with
+ANTHROPIC_API_KEY (or another credential source the SDK resolves
+automatically) until a different provider is picked in Settings.
 """
 
 from __future__ import annotations
 
-import base64
 import logging
-import os
-
-import anthropic
 
 from extraction.schema import RISKY_CHANGE_TYPES, ExtractedNotice, LLMExtractedFields
+from llm.provider import extract_structured
 
 logger = logging.getLogger(__name__)
-
-# Overridable via env var for high-volume runs where a cheaper/faster model
-# may be preferred -- kept as a single constant, not scattered through the
-# module, so that choice stays a one-line change.
-DEFAULT_MODEL = os.environ.get("EXTRACTION_MODEL", "claude-opus-5")
 
 # PRD / tech architecture doc section 5: the human-review gate must exist as
 # a toggle from the start, default ON. Do not flip this off without explicit
@@ -40,83 +36,28 @@ Rules:
 """
 
 
-def _build_client() -> anthropic.Anthropic:
-    return anthropic.Anthropic()
-
-
-def extract_notice(
-    page_text: str,
-    source_url: str,
-    source_id: str,
-    client: anthropic.Anthropic = None,
-    model: str = DEFAULT_MODEL,
-) -> ExtractedNotice:
-    if client is None:
-        client = _build_client()
-
-    response = client.messages.parse(
-        model=model,
-        max_tokens=2048,
-        system=SYSTEM_PROMPT,
-        messages=[
-            {
-                "role": "user",
-                "content": f"Source URL: {source_url}\n\nNotice text:\n{page_text}",
-            }
-        ],
-        output_format=LLMExtractedFields,
+def extract_notice(page_text: str, source_url: str, source_id: str) -> ExtractedNotice:
+    fields = extract_structured(
+        system_prompt=SYSTEM_PROMPT,
+        schema=LLMExtractedFields,
+        user_text=f"Source URL: {source_url}\n\nNotice text:\n{page_text}",
     )
-
-    fields = response.parsed_output
     return ExtractedNotice.from_llm_fields(fields, source_id=source_id, source_url=source_url)
 
 
-def extract_notice_from_pdf(
-    pdf_bytes: bytes,
-    source_url: str,
-    source_id: str,
-    client: anthropic.Anthropic = None,
-    model: str = DEFAULT_MODEL,
-) -> ExtractedNotice:
+def extract_notice_from_pdf(pdf_bytes: bytes, source_url: str, source_id: str) -> ExtractedNotice:
     """
-    Sends the PDF directly to Claude as a document input rather than
-    pre-extracting text with pypdf. Verified necessary against real BPSC
-    notices (Aug 2026), most of which are scanned/image-only PDFs with no
-    embedded text layer -- Claude reads those natively via vision; pypdf
-    cannot. See pdf_handler.py module docstring.
+    Sends the PDF directly to the model as a document/vision input rather
+    than pre-extracting text with pypdf. Verified necessary against real
+    BPSC notices (Aug 2026), most of which are scanned/image-only PDFs
+    with no embedded text layer -- vision reads those; pypdf cannot. See
+    pdf_handler.py module docstring.
     """
-    if client is None:
-        client = _build_client()
-
-    pdf_b64 = base64.standard_b64encode(pdf_bytes).decode("utf-8")
-
-    response = client.messages.parse(
-        model=model,
-        max_tokens=2048,
-        system=SYSTEM_PROMPT,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "document",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "application/pdf",
-                            "data": pdf_b64,
-                        },
-                    },
-                    {
-                        "type": "text",
-                        "text": f"Source URL: {source_url}\n\nRead this notice -- it may be a scanned image -- and structure it.",
-                    },
-                ],
-            }
-        ],
-        output_format=LLMExtractedFields,
+    fields = extract_structured(
+        system_prompt=f"{SYSTEM_PROMPT}\n\nSource URL: {source_url}",
+        schema=LLMExtractedFields,
+        pdf_bytes=pdf_bytes,
     )
-
-    fields = response.parsed_output
     return ExtractedNotice.from_llm_fields(fields, source_id=source_id, source_url=source_url)
 
 

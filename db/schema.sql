@@ -114,3 +114,69 @@ CREATE TABLE callback_requests (
   exam_id INT REFERENCES exams(id),
   requested_at TIMESTAMP DEFAULT now()
 );
+
+-- Integrity Scoreboard, Phase 0: Historical Baseline (2026-08-27, companion
+-- to the Wedge Roadmap's "integrity-scoreboard-roadmap.html"). A structured
+-- log of PAST incidents sourced from public record only (EOU raids, court
+-- petitions, news) -- never from candidate reports, which is Phase 2's
+-- separate, differently-verified intake. This table sets sensitivity for
+-- the future RAG color engine (Phase 1) -- history makes an exam/centre
+-- need LESS new evidence to escalate, but per the roadmap's own rule, no
+-- exam is ever colored Red on history alone, so this table never computes
+-- a color by itself. source_url is NOT NULL deliberately: an incident with
+-- no citation doesn't belong in this table -- this product's whole
+-- thesis is corroboration, not assertion, so fabricating or guessing an
+-- entry here would undermine the one thing it's for.
+CREATE TABLE integrity_incidents (
+  id SERIAL PRIMARY KEY,
+  source_id INT NOT NULL REFERENCES sources(id),
+  exam_name TEXT NOT NULL,              -- free text, not exams.id -- historical incidents (e.g. TRE-3) often predate anything in the exams table
+  cycle TEXT,                           -- e.g. "TRE-3", "72nd CCE" -- however the source itself refers to the cycle
+  centre TEXT,                          -- exam centre name/code where known; NULL means exam-body-level only
+  incident_type TEXT NOT NULL,          -- e.g. paper_leak, re_test_ordered, malpractice, admin_irregularity
+  detection_source TEXT NOT NULL,       -- e.g. "EOU raid", "court petition", "news report"
+  resolution TEXT,                      -- what actually happened / outcome, where known
+  source_url TEXT NOT NULL,             -- citation -- required, see note above
+  incident_date DATE,                   -- drives the sensitivity model's time-decay; nullable only when genuinely undated in the source
+  created_at TIMESTAMP DEFAULT now()
+);
+CREATE INDEX idx_integrity_incidents_source_id ON integrity_incidents(source_id);
+
+-- Integrity search history (2026-08-27, "if you run the same keyword and
+-- exams again is gonna cost me money uselessly"). One row per web search
+-- actually run, independent of whether anything from it got logged --
+-- candidates_found is set when the search runs, candidates_logged is
+-- updated afterward once the operator picks which (if any) to keep. Used
+-- both for a browsable history page and to warn before re-running an
+-- identical search.
+CREATE TABLE integrity_searches (
+  id SERIAL PRIMARY KEY,
+  exam_id INT REFERENCES exams(id),
+  exam_name TEXT NOT NULL,
+  keyword TEXT,
+  candidates_found INT NOT NULL DEFAULT 0,
+  candidates_logged INT NOT NULL DEFAULT 0,
+  searched_at TIMESTAMP DEFAULT now()
+);
+CREATE INDEX idx_integrity_searches_exam_id ON integrity_searches(exam_id);
+
+-- LLM provider settings (2026-08-27, "allow me to use any model and
+-- storing the api key ... to save on the cost"). Singleton row (id is
+-- always 1) -- one active provider/model at a time, applied to both
+-- extraction and integrity search (llm/provider.py reads this instead of
+-- either module instantiating a provider SDK client directly). Cloud
+-- providers only for now, by explicit decision -- a local model (e.g. via
+-- Ollama) was raised and deliberately deferred, not forgotten.
+-- Keys are stored in plaintext, same as everything else in this local-only
+-- admin -- this table is not more sensitive than sources.config_json,
+-- which already holds operational config; if this app is ever deployed
+-- somewhere multi-tenant, this table needs real secret storage first.
+CREATE TABLE llm_settings (
+  id INT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  active_provider TEXT NOT NULL DEFAULT 'anthropic',   -- 'anthropic' or 'openai'
+  anthropic_model TEXT NOT NULL DEFAULT 'claude-opus-5',
+  anthropic_api_key TEXT,                              -- NULL falls back to ANTHROPIC_API_KEY env var, same as before this feature existed
+  openai_model TEXT NOT NULL DEFAULT 'gpt-5-mini',
+  openai_api_key TEXT,                                 -- NULL falls back to OPENAI_API_KEY env var
+  updated_at TIMESTAMP DEFAULT now()
+);
